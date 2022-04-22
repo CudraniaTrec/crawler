@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>stock</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <style>
+        body {
+            background-color: gray;
+            background-image: url(/static/background.jpg);
+            background-size: 90%;
+            background-position: center 0;
+            background-repeat: no-repeat;
+        }
+        
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            color: greenyellow;
+            text-align: center;
+        }
+        
+        label {
+            color: blue;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        
+        .stockTable {
+            border-collapse: collapse;
+            background-color: antiquewhite;
+            border: 2px solid black;
+            text-align: center;
+            width: 800px;
+        }
+        
+        .cell {
+            border: 1px solid black;
+        }
+        
+        .colorRed {
+            color: red;
+        }
+        
+        .colorGreen {
+            color: green;
+        }
+        
+        .sel {
+            padding-left: 50px;
+        }
+    </style>
+    <script src="{{ url_for('static', filename='jquery-3.6.0.min.js') }}"></script>
+
+</head>
+
+<body>
+    <center>
+        <div class="title">股票交易信息查询</div>
+        <br>
+        <table>
+            <tr>
+                <td><label>股票:</label></td>
+                <td>
+                    <select class="stock">
+							<option value ="1">平安银行</option>
+							<option value ="2">万科A</option>
+							<option value ="4">国华网安</option>
+							<option value ="5">ST星源</option>
+					</select>
+                </td>
+                <td class="sel"><label>年份:</label></td>
+                <td>
+                    <select class="year">
+							<option value ="2015">2015</option>
+							<option value ="2016">2016</option>
+							<option value ="2017">2017</option>
+							<option value ="2018">2018</option>
+							<option value ="2019">2019</option>
+                            <option value ="2020">2020</option>
+                            <option value ="2021">2021</option>
+					</select>
+                </td>
+                <td class="sel"><label>月份:</label></td>
+                <td>
+                    <select class="month">
+                        <option value ="1">1月</option>
+                        <option value ="2">2月</option>
+                        <option value ="3">3月</option>
+                        <option value ="4">4月</option>
+                        <option value ="5">5月</option>
+                        <option value ="6">6月</option>
+                        <option value ="7">7月</option>
+                        <option value ="8">8月</option>
+                        <option value ="9">9月</option>
+                        <option value ="10">10月</option>
+                        <option value ="11">11月</option>
+                        <option value ="12">12月</option>
+					</select>
+                </td>
+            </tr>
+        </table>
+        <input type="image" src="static/submit.png" class="submit" height="25" width="70" value="提交" />
+        <br><br>
+        <div class="stock_table"></div>
+    </center>
+    <script>
+        function getTableData(stockNum, year, month) {
+            //这个函数得到股票号，年，月份之后想服务器同步请求数据
+            //服务器的返回值是一个table表单元素，直接将其渲染到我们的页面之中
+            var data = {
+                stockNum: stockNum,
+                year: year,
+                month: month
+            };
+            $.ajax({
+                url: "/server",
+                async: false,
+                data: data,
+                success: function(rtnData) {
+                    $(".stock_table").html(rtnData);
+                }
+            });
+        }
+        $('.submit').click(function() {
+            //每次点击提交的时候自动得到当前选择的股票号，年，月并向服务器请求数据
+            var stocknumber = $('.stock').val();
+            var year = $('.year').val();
+            var month = $('.month').val();
+            getTableData(stocknumber, year, month);
+        });
+        //一开始的时候请求平安银行2015年1月的数据
+        getTableData(1, 2015, 1)
+    </script>
+</body>
+
+</html>
